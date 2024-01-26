@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Find Teacher</title>
+  <!-- Add the React and ReactDOM libraries -->
+  <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+  <!-- Add the Babel standalone for JSX transformation -->
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <!-- Add the Bootstrap CSS for styling -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div id="root"></div>
+
+<script type="text/babel">
+  // Define the options for the dropdown
+  var options = ['teacher_1', 'teacher_B', 'teacher_3'];
+  var global_schedule = {};
+  var global_select = '';
+  // React component for the app
+  class FindTeacherApp extends React.Component {
+    constructor(props) {
+      super(props);
+      // Initial state with default values
+      this.state = {
+        selectedTeacher: '',
+        teacherClassroom: '',
+        loaded: false
+      };
+      this.schedule = null;
+      this.select = <option value="">Select teacher</option>;
+    }
+
+    static updateSelect() {
+        fetch("https://raw.githubusercontent.com/yonatand1230/FindTeacher/main/schedule.json")
+        .then(response => {
+            return response.json();
+        })
+        .then(schedule => {
+            global_schedule = schedule;
+            options = Object.keys(schedule);
+            options.splice(options.indexOf(""), 1);
+            global_select = options.map((teacher, index) => (
+                                <option key={index} value={teacher}>
+                                {teacher}
+                                </option>
+                            ))
+            return 1;
+        })
+        .then(a => {
+            ReactDOM.render(<FindTeacherApp />, document.getElementById('root'));
+        });
+        return 1;
+    }
+    
+    // Function to handle teacher selection
+    handleTeacherSelection = (selectedTeacher) => {
+      // Call the SelectTeacher function and update the state
+      const classroom = SelectTeacher(selectedTeacher);
+      this.setState({
+        selectedTeacher: selectedTeacher,
+        teacherClassroom: classroom
+      });
+    };
+
+    render() {
+      return (
+        <div className="container mt-5">
+          <div className="border p-4" style={{borderColor: 'blue'}}>
+            <h2 dir="rtl">Find Teacher</h2>
+            <div className="form-group">
+              <label>Select Teacher</label>
+              {/* Dropdown button component */}
+              <select
+                className="form-control"
+                value={this.state.selectedTeacher}
+                onChange={(e) => this.handleTeacherSelection(e.target.value)}
+                >
+              {global_select}
+              </select>
+            </div>
+            {/* Display the teacher's classroom */}
+            <p>{this.state.selectedTeacher && `Teacher is at classroom ${this.state.teacherClassroom}`}</p>
+          </div>
+        </div>
+      );
+    }
+  }
+
+  // Function to simulate fetching the classroom information based on the selected teacher
+  function getCurrentClass(currentTime, schedule) {
+        // Extract hours and minutes from the provided time
+        let [hours, minutes] = currentTime.split(':');
+        
+        // Format hours and minutes with leading zeros if needed
+        hours = hours.length === 1 ? '0' + hours : hours;
+        minutes = minutes.length === 1 ? '0' + minutes : minutes;
+        
+        // Create a time string in the same format as the schedule keys
+        let formattedTime = `${hours}:${minutes}`;
+
+        // Get an array of scheduled times sorted in descending order
+        let sortedTimes = Object.keys(schedule).sort((a, b) => {
+            return new Date(`1970-01-01T${b}:00Z`) - new Date(`1970-01-01T${a}:00Z`);
+        });
+
+        // Find the class that started most recently but is still before or at the provided time
+        let currentClass = "No class scheduled at this time";
+        for (let time of sortedTimes) {
+            if (formattedTime >= time) {
+            currentClass = schedule[time];
+            break;
+            }
+        }
+
+        return currentClass;
+    }
+  
+  function SelectTeacher(teacherName) {
+    // Simulating some logic to determine the classroom
+    let today = new Date();
+    let schedule = global_schedule[teacherName][today.getDay()];
+    let time = `${today.getHours().toString().padStart(2,'0')}:${today.getMinutes().toString().padStart(2,'0')}`
+    console.log(time, schedule)
+    let current = getCurrentClass(time, schedule);
+    console.log(current);
+    return `${current.room} teaching ${current.lesson}`;
+  }
+
+  // Render the React component to the root div
+  ReactDOM.render(<FindTeacherApp />, document.getElementById('root'));
+  FindTeacherApp.updateSelect();
+</script>
+
+</body>
+</html>
