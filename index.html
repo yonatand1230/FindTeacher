@@ -33,21 +33,48 @@
             let p = document.getElementById("text");
             p.innerHTML = text;
         }
+
+        function getCurrentClass(currentTime, schedule) {
+            let [hours, minutes] = currentTime.split(':');
+            hours = hours.length === 1 ? '0' + hours : hours; // pad with zeros
+            minutes = minutes.length === 1 ? '0' + minutes : minutes;
+            let formattedTime = `${hours}:${minutes}`; // put into a string again
+
+            // get times
+            let sortedTimes = Object.keys(schedule).sort((a, b) => {
+                return new Date(`1970-01-01T${b}:00Z`) - new Date(`1970-01-01T${a}:00Z`);
+            });
+
+            // Find the class that started most recently but is still before or at the provided time
+            let currentClass = "No class scheduled at this time";
+            for (let time of sortedTimes) {
+                if (formattedTime >= time) {
+                currentClass = schedule[time];
+                break;
+                }
+            }
+            return currentClass;
+        }
+
         function teacherSelected() {
             let select = document.getElementById("select-teacher");
             let teacher = select.value;
-            let p = document.getElementById("text");
-            displayText(teacher);
-
+            let today = new Date();
+            let todaySchedule = global_schedule[teacher][today.getDay()];
+            let time = `${today.getHours().toString().padStart(2,'0')}:${today.getMinutes().toString().padStart(2,'0')}`
+            let current = getCurrentClass(time, todaySchedule);
+            displayText(`${current.room} teaching ${current.lesson}`);
         }
 
+        let global_schedule;
         // Get Schedule
-        let scheduleUrl = "https://raw.githubusercontent.com/yonatand1230/FindTeacher/refs/heads/main/schedule.json"
+        let scheduleUrl = "https://raw.githubusercontent.com/yonatand1230/FindTeacher/refs/heads/main/schedule_2025.json"
         fetch(scheduleUrl)
             .then(response => {
                 return response.json();
             })
             .then(schedule => {
+                global_schedule = schedule;
                 let options_source = Object.keys(schedule);
                 options_source.splice(options_source.indexOf(""), 1);
                 var options = sortTeachers(options_source);
