@@ -94,9 +94,11 @@
             let teacher = select.value;
             let today = new Date();
 
-            let day = 4 //today.getDay()
-            let time = `16:01` //`${today.getHours().toString().padStart(2,'0')}:${today.getMinutes().toString().padStart(2,'0')}`
-
+            let day = today.getDay()
+            let time = `${today.getHours().toString().padStart(2,'0')}:${today.getMinutes().toString().padStart(2,'0')}`
+            if (day==5 || day==6) {
+                displayText("<b>שבת שלום</b>");
+            }
             let schedule = global_schedule[teacher][day];
             console.log(teacher, day, time, schedule)
             let current = getCurrentClass(time, schedule);
@@ -143,6 +145,7 @@
                     </select>
                 </div>
                 <p id="text" style="text-align: right; font-size: 1.3rem;"></p>
+                <p style="text-align: right; font-size: 1.2rem; font-weight: bold;">- פותח על ידי יונתן דגה -</p>
             </div>
         </div>
     </div>
