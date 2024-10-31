@@ -34,10 +34,11 @@
             p.innerHTML = text.replaceAll("\n","<br>");
         }
 
-        function getCurrentClass(currentTime, schedule) {
+        /*function getCurrentClass(currentTime, schedule) {
             let [hours, minutes] = currentTime.split(':');
             hours = hours.length === 1 ? '0' + hours : hours; // pad with zeros
             minutes = minutes.length === 1 ? '0' + minutes : minutes;
+            console.log(hours, minutes)
             let formattedTime = `${hours}:${minutes}`; // put into a string again
 
             // get times
@@ -50,10 +51,41 @@
             for (let time of sortedTimes) {
                 if (formattedTime >= time) {
                     currentClass = schedule[time];
+                    console.log(currentClass)
                     currentClass.time = time;
                     break;
                 }
             }
+            console.log(currentClass)
+            return currentClass;
+        }*/
+
+        function getCurrentClass(currentTime, schedule) {
+            // Extract hours and minutes from the provided time
+            let [hours, minutes] = currentTime.split(':');
+            
+            // Format hours and minutes with leading zeros if needed
+            hours = hours.length === 1 ? '0' + hours : hours;
+            minutes = minutes.length === 1 ? '0' + minutes : minutes;
+            
+            // Create a time string in the same format as the schedule keys
+            let formattedTime = `${hours}:${minutes}`;
+
+            // Get an array of scheduled times sorted in descending order
+            let sortedTimes = Object.keys(schedule).sort((a, b) => {
+                return new Date(`1970-01-01T${b}:00Z`) - new Date(`1970-01-01T${a}:00Z`);
+            });
+
+            // Find the class that started most recently but is still before or at the provided time
+            let currentClass = "No class scheduled at this time";
+            for (let time of sortedTimes) {
+                if (formattedTime >= time) {
+                currentClass = schedule[time];
+                currentClass.time = time
+                break;
+                }
+            }
+
             return currentClass;
         }
 
@@ -61,14 +93,18 @@
             let select = document.getElementById("select-teacher");
             let teacher = select.value;
             let today = new Date();
-            let todaySchedule = global_schedule[teacher][4]//[today.getDay()];
-            console.log(todaySchedule)
-            let time = `15:10` //`${today.getHours().toString().padStart(2,'0')}:${today.getMinutes().toString().padStart(2,'0')}`
-            let current = getCurrentClass(time, todaySchedule);
-            displayText(`נמצא שיעור:\n<u>מורה:</u> ${teacher}\n<u>חדר:</u> ${current.room}\n<u>מקצוע:</u> ${current.lesson}\n<u>שעה:</u> ${current.time}`);
+
+            let day = 4 //today.getDay()
+            let time = `16:01` //`${today.getHours().toString().padStart(2,'0')}:${today.getMinutes().toString().padStart(2,'0')}`
+
+            let schedule = global_schedule[teacher][day];
+            console.log(teacher, day, time, schedule)
+            let current = getCurrentClass(time, schedule);
+            console.log(current);
+            displayText(`<b>נמצא שיעור</b>:\n<u>מורה:</u> ${teacher}\n<u>חדר:</u> ${current.room}\n<u>מקצוע:</u> ${current.lesson}\n<u>כיתה:</u> ${current.grade}\n<u>שעה:</u> ${current.time}`);
         }
 
-        let global_schedule;
+        var global_schedule;
         // Get Schedule
         let scheduleUrl = "https://raw.githubusercontent.com/yonatand1230/FindTeacher/refs/heads/main/schedule_2025.json"
         fetch(scheduleUrl)
@@ -100,13 +136,13 @@
     <div id="root">
         <div class="container mt-5">
             <div class="border p-4" style="border-color: blue;">
-                <h2 dir="rtl" style="float: right">איתור מורה</h2>
+                <h2 dir="rtl" style="text-align: right; font-size: 2rem;">איתור מורה</h2>
                 <div class="form-group">
-                    <label style="float: right">בחירת מורה:          </label>
-                    <select class="form-control" id="select-teacher" onchange="teacherSelected()">
+                    <label style="width: 100%; text-align: right; font-size: 1.2rem;" dir="rtl"><b>בחר מורה:</b></label>
+                    <select style="font-size: 1.3rem;" class="form-control" id="select-teacher" onchange="teacherSelected()">
                     </select>
                 </div>
-                <p id="text"></p>
+                <p id="text" style="text-align: right; font-size: 1.3rem;"></p>
             </div>
         </div>
     </div>
