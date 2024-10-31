@@ -31,7 +31,7 @@
         }
         function displayText(text) {
             let p = document.getElementById("text");
-            p.innerHTML = text;
+            p.innerHTML = text.replaceAll("\n","<br>");
         }
 
         function getCurrentClass(currentTime, schedule) {
@@ -49,8 +49,9 @@
             let currentClass = "No class scheduled at this time";
             for (let time of sortedTimes) {
                 if (formattedTime >= time) {
-                currentClass = schedule[time];
-                break;
+                    currentClass = schedule[time];
+                    currentClass.time = time;
+                    break;
                 }
             }
             return currentClass;
@@ -60,10 +61,11 @@
             let select = document.getElementById("select-teacher");
             let teacher = select.value;
             let today = new Date();
-            let todaySchedule = global_schedule[teacher][today.getDay()];
-            let time = `${today.getHours().toString().padStart(2,'0')}:${today.getMinutes().toString().padStart(2,'0')}`
+            let todaySchedule = global_schedule[teacher][4]//[today.getDay()];
+            console.log(todaySchedule)
+            let time = `15:10` //`${today.getHours().toString().padStart(2,'0')}:${today.getMinutes().toString().padStart(2,'0')}`
             let current = getCurrentClass(time, todaySchedule);
-            displayText(`${current.room} teaching ${current.lesson}`);
+            displayText(`נמצא שיעור:\n<u>מורה:</u> ${teacher}\n<u>חדר:</u> ${current.room}\n<u>מקצוע:</u> ${current.lesson}\n<u>שעה:</u> ${current.time}`);
         }
 
         let global_schedule;
