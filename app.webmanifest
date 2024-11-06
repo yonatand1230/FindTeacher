@@ -8,11 +8,6 @@
             "src": "https://raw.githubusercontent.com/yonatand1230/FindTeacher/main/assets/icon_circle_1024.png",
             "sizes": "1024x1024",
             "type": "image/png"
-        },
-        {
-            "src": "https://raw.githubusercontent.com/yonatand1230/FindTeacher/main/assets/icon_circle_32.png",
-            "sizes": "32x32",
-            "type": "image/png"
         }
     ]
 }
