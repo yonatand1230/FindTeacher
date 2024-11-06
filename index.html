@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Find Teacher</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="icon" type="image/x-icon" href="/assets/icon_circle_32.png">
     <script>
         // Sort Teachers func
         function sortTeachers(teachers) {
@@ -31,7 +32,7 @@
         }
         function displayText(text) {
             let p = document.getElementById("text");
-            p.innerHTML = text.replaceAll("\n","<br>");
+            p.innerHTML = text.replaceAll("\n", "<br>");
         }
 
         /*function getCurrentClass(currentTime, schedule) {
@@ -63,11 +64,11 @@
         function getCurrentClass(currentTime, schedule) {
             // Extract hours and minutes from the provided time
             let [hours, minutes] = currentTime.split(':');
-            
+
             // Format hours and minutes with leading zeros if needed
             hours = hours.length === 1 ? '0' + hours : hours;
             minutes = minutes.length === 1 ? '0' + minutes : minutes;
-            
+
             // Create a time string in the same format as the schedule keys
             let formattedTime = `${hours}:${minutes}`;
 
@@ -80,9 +81,9 @@
             let currentClass = "No class scheduled at this time";
             for (let time of sortedTimes) {
                 if (formattedTime >= time) {
-                currentClass = schedule[time];
-                currentClass.time = time
-                break;
+                    currentClass = schedule[time];
+                    currentClass.time = time
+                    break;
                 }
             }
 
@@ -95,8 +96,8 @@
             let today = new Date();
 
             let day = today.getDay()
-            let time = `${today.getHours().toString().padStart(2,'0')}:${today.getMinutes().toString().padStart(2,'0')}`
-            if (day==5 || day==6) {
+            let time = `${today.getHours().toString().padStart(2, '0')}:${today.getMinutes().toString().padStart(2, '0')}`
+            if (day == 5 || day == 6) {
                 displayText("<b>שבת שלום</b>");
             }
             let schedule = global_schedule[teacher][day];
@@ -141,7 +142,8 @@
                 <h2 dir="rtl" style="text-align: right; font-size: 2rem;">איתור מורה</h2>
                 <div class="form-group">
                     <label style="width: 100%; text-align: right; font-size: 1.2rem;" dir="rtl"><b>בחר מורה:</b></label>
-                    <select style="font-size: 1.3rem;" class="form-control" id="select-teacher" onchange="teacherSelected()">
+                    <select style="font-size: 1.3rem;" class="form-control" id="select-teacher"
+                        onchange="teacherSelected()">
                     </select>
                 </div>
                 <p id="text" style="text-align: right; font-size: 1.3rem;"></p>
